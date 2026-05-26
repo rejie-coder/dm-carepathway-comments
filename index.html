@@ -479,27 +479,32 @@ body.presentation .intro { display: none; }
   background: #455a64;
 }
 /* Comment toggle button in header */
+/* Comment toggle button in header - amber/orange to stand out */
 .btn-comment {
-  background: rgba(255,255,255,0.18);
+  background: linear-gradient(135deg, #ffb300 0%, #ff8f00 100%);
   color: #fff;
   border: 1px solid rgba(255,255,255,0.35);
   padding: 7px 14px;
   border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 0.82rem;
-  font-weight: 500;
+  font-weight: 600;
   font-family: inherit;
   display: inline-flex;
   align-items: center;
   gap: 5px;
   transition: all var(--transition);
+  box-shadow: 0 1px 4px rgba(255,179,0,0.3);
 }
 .btn-comment:hover {
-  background: rgba(255,255,255,0.3);
+  background: linear-gradient(135deg, #ffca28 0%, #ffa000 100%);
+  box-shadow: 0 2px 8px rgba(255,179,0,0.5);
+  transform: translateY(-1px);
 }
 .btn-comment.active {
-  background: rgba(255,255,255,0.35);
+  background: linear-gradient(135deg, #ff8f00 0%, #ef6c00 100%);
   border-color: rgba(255,255,255,0.6);
+  box-shadow: 0 1px 4px rgba(239,108,0,0.4);
 }
 /* Password modal */
 .pw-overlay {
@@ -736,18 +741,7 @@ body.presentation .intro { display: none; }
     <div class="comment-form">
       <div class="comment-form-row">
         <input type="text" id="commentName" placeholder="Your name" maxlength="50">
-        <select id="commentDesignation">
-          <option value="">Select role...</option>
-          <option value="Medical Officer">Medical Officer</option>
-          <option value="Consultant">Consultant</option>
-          <option value="Nursing Officer">Nursing Officer</option>
-          <option value="DENO">DENO</option>
-          <option value="PHNO">PHNO</option>
-          <option value="Dietitian">Dietitian</option>
-          <option value="Podiatrist">Podiatrist</option>
-          <option value="Student">Student</option>
-          <option value="Other">Other</option>
-        </select>
+        <input type="text" id="commentDesignation" placeholder="Speciality" maxlength="50">
       </div>
       <textarea id="commentText" placeholder="Share your thoughts, feedback, or questions..." maxlength="1000"></textarea>
       <button class="btn-submit" id="btnSubmitComment" onclick="submitComment()">Post Comment</button>
@@ -2919,7 +2913,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // ========== FIREBASE COMMENT SYSTEM ==========
 
-// 🔴 IMPORTANT: Replace these with your Firebase config after setup
+// ✅ Firebase configuration - connected
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyA0mioF0Utr_L0WoFzr6tUbpCj2jsM2ctw",
   authDomain: "dmcare-comments.firebaseapp.com",
@@ -2937,15 +2931,9 @@ let firebaseApp = null;
 let commentsRef = null;
 let commentsListener = null;
 
-// DESIGNATION choices
-const DESIGNATIONS = [
-  "Admin", "Cardiologist", "Endocrinologist", "Family Physician",
-  "Ophthalmologist", "Nephrologist", "Neurologist", "General Physician", "Other"
-];
-
 // ========== INITIALIZATION ==========
 function initCommentSystem() {
-  // Load saved name/designation from localStorage
+  // Load saved name/speciality from localStorage
   const savedName = localStorage.getItem("dmcare_comment_name") || "";
   const savedDesignation = localStorage.getItem("dmcare_comment_designation") || "";
   document.getElementById("commentName").value = savedName;
@@ -2995,7 +2983,11 @@ function listenForComments() {
     renderComments(comments);
   }, err => {
     console.error("Firebase listener error:", err);
-    showCommentError("Failed to load comments. Check your connection.");
+    if (err.code === "PERMISSION_DENIED") {
+      showCommentError("<strong>Firebase permission denied.</strong><br><br>Please update your Database Rules:<br>1. Go to Firebase Console → Realtime Database → Rules<br>2. Set both .read and .write to <strong>true</strong><br>3. Click Publish<br>4. Refresh this page.");
+    } else {
+      showCommentError("Failed to load comments. Check your connection.");
+    }
   });
 }
 
@@ -3054,7 +3046,7 @@ function escapeHtml(str) {
 
 function showCommentError(msg) {
   const list = document.getElementById("commentList");
-  if (list) list.innerHTML = '<div class="comment-empty">' + msg + '</div>';
+  if (list) list.innerHTML = '<div class="comment-empty" style="text-align:left;">' + msg + '</div>';
 }
 
 // ========== SUBMIT COMMENT ==========
@@ -3069,7 +3061,7 @@ function submitComment() {
   const text = (textInput.value || "").trim();
 
   if (!name) { alert("Please enter your name."); nameInput.focus(); return; }
-  if (!designation) { alert("Please select your designation."); designationInput.focus(); return; }
+  if (!designation.trim()) { alert("Please enter your speciality."); designationInput.focus(); return; }
   if (!text) { alert("Please write a comment."); textInput.focus(); return; }
 
   // Save identity to localStorage
@@ -3102,7 +3094,11 @@ function submitComment() {
     })
     .catch(err => {
       console.error("Post error:", err);
-      alert("Failed to post comment. Please try again.");
+      if (err.code === "PERMISSION_DENIED") {
+        alert("Firebase permission denied.\n\nPlease update your Database Rules:\n1. Go to Firebase Console → Realtime Database → Rules\n2. Set both .read and .write to true\n3. Click Publish\n4. Refresh this page.");
+      } else {
+        alert("Failed to post comment. Please try again.\n\nError: " + (err.message || "Unknown error"));
+      }
       submitBtn.disabled = false;
       submitBtn.textContent = "Post Comment";
     });
