@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KPIs &amp; Training Needs &mdash; Diabetes Care Pathway Sri Lanka</title>
+<style>
+/* ========== RESET & BASE ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --primary-accent: #81c784; --primary-dark: #4caf50;
+  --secondary-accent: #90a4ae; --secondary-dark: #607d8b;
+  --tertiary-accent: #ce93d8; --tertiary-dark: #ab47bc;
+  --header-purple: #5e35b1; --header-dark: #4527a0;
+  --warning: #e53935; --warning-bg: #ffebee;
+  --amber: #ffb300; --bg: #fafafa; --bg-white: #ffffff;
+  --text: #263238; --text-light: #546e7a; --border: #e0e0e0;
+  --shadow: rgba(0,0,0,0.12); --shadow-lg: rgba(0,0,0,0.25);
+  --radius: 8px; --radius-sm: 4px;
+  --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+html { scroll-behavior: smooth; }
+body { font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: var(--bg); color: var(--text); line-height: 1.55; min-height: 100vh; }
+a { color: var(--header-purple); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ========== HEADER ========== */
+.header { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: linear-gradient(135deg, var(--header-purple) 0%, var(--header-dark) 100%); color: #fff; box-shadow: 0 2px 8px var(--shadow-lg); transition: transform var(--transition); }
+.header-inner { max-width: 1400px; margin: 0 auto; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.header-title { font-size: 1.15rem; font-weight: 600; letter-spacing: 0.3px; }
+.header-subtitle { font-size: 0.78rem; opacity: 0.88; font-weight: 400; }
+.header-actions { display: flex; gap: 8px; align-items: center; }
+.btn { padding: 7px 14px; border: none; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.82rem; font-weight: 500; transition: all var(--transition); display: inline-flex; align-items: center; gap: 5px; font-family: inherit; }
+.btn-primary { background: rgba(255,255,255,0.18); color: #fff; border: 1px solid rgba(255,255,255,0.35); }
+.btn-primary:hover { background: rgba(255,255,255,0.3); }
+.btn-warning { background: var(--warning); color: #fff; }
+.btn-warning:hover { background: #c62828; }
+
+/* ========== MAIN LAYOUT ========== */
+.main { padding-top: 68px; max-width: 1400px; margin: 0 auto; padding-left: 16px; padding-right: 16px; padding-bottom: 40px; }
+.intro { text-align: center; padding: 18px 0 10px; }
+.intro h1 { font-size: 1.05rem; color: var(--header-purple); font-weight: 600; margin-bottom: 4px; }
+.intro p { font-size: 0.82rem; color: var(--text-light); }
+
+/* ========== NAV LINK BACK ========== */
+.back-link { display: inline-flex; align-items: center; gap: 5px; color: var(--header-purple); font-size: 0.82rem; margin-bottom: 10px; }
+.back-link svg { flex-shrink: 0; }
+
+/* ========== TOC ========== */
+.toc-bar { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; padding: 10px 14px; background: #fff; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 14px; box-shadow: 0 1px 4px var(--shadow); }
+.toc-item { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: var(--radius-sm); font-size: 0.78rem; font-weight: 500; color: var(--text-light); background: #f5f5f5; transition: all var(--transition); cursor: pointer; border: none; font-family: inherit; }
+.toc-item:hover { background: var(--header-purple); color: #fff; }
+.toc-item .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* ========== CARE LEVEL SECTIONS ========== */
+.care-section { background: var(--bg-white); border-radius: var(--radius); box-shadow: 0 2px 12px var(--shadow); border: 1px solid var(--border); margin-bottom: 20px; overflow: hidden; }
+.section-header { padding: 14px 20px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.section-header h2 { font-size: 0.95rem; font-weight: 600; }
+.section-header .badge { font-size: 0.72rem; }
+.section-body { padding: 18px 20px; }
+
+/* Color-coded section headers */
+.header-primary { background: linear-gradient(135deg, #e8f5e9 0%, #fff 100%); border-bottom: 2px solid #c8e6c9; }
+.header-secondary { background: linear-gradient(135deg, #eceff1 0%, #fff 100%); border-bottom: 2px solid #cfd8dc; }
+.header-tertiary { background: linear-gradient(135deg, #f3e5f5 0%, #fff 100%); border-bottom: 2px solid #e1bee7; }
+.header-matrix { background: linear-gradient(135deg, #ede7f6 0%, #fff 100%); border-bottom: 2px solid #d1c4e9; }
+.header-references { background: linear-gradient(135deg, #fff8e1 0%, #fff 100%); border-bottom: 2px solid #ffecb3; }
+
+/* Color-coded left borders */
+.accent-primary { border-left: 4px solid var(--primary-accent); padding-left: 12px; }
+.accent-secondary { border-left: 4px solid var(--secondary-accent); padding-left: 12px; }
+.accent-tertiary { border-left: 4px solid var(--tertiary-accent); padding-left: 12px; }
+.accent-amber { border-left: 4px solid var(--amber); padding-left: 12px; }
+.accent-red { border-left: 4px solid var(--warning); padding-left: 12px; }
+.accent-purple { border-left: 4px solid var(--header-purple); padding-left: 12px; }
+
+/* ========== TABLES ========== */
+.kpi-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin: 8px 0; }
+.kpi-table th { background: #f5f5f5; padding: 8px 10px; text-align: left; font-weight: 600; border-bottom: 2px solid var(--border); white-space: nowrap; }
+.kpi-table td { padding: 7px 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+.kpi-table tr:hover td { background: #fafafa; }
+.kpi-table tr:last-child td { border-bottom: none; }
+
+/* ========== SUB-SECTIONS ========== */
+.sub-section { margin-bottom: 22px; }
+.sub-section:last-child { margin-bottom: 0; }
+.sub-section h3 { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; padding-bottom: 4px; border-bottom: 2px solid var(--border); display: flex; align-items: center; gap: 6px; }
+.sub-section h4 { font-size: 0.82rem; font-weight: 600; margin: 12px 0 6px; }
+.sub-section p, .sub-section li { font-size: 0.84rem; color: var(--text); line-height: 1.65; }
+.sub-section ul, .sub-section ol { padding-left: 20px; margin: 6px 0; }
+.sub-section li { margin-bottom: 4px; }
+
+/* ========== INSTITUTION BOX ========== */
+.institution-box { background: #f8f9fa; border-radius: var(--radius-sm); padding: 10px 14px; margin-bottom: 12px; font-size: 0.82rem; border-left: 3px solid var(--header-purple); }
+.institution-box strong { color: var(--header-purple); }
+
+/* ========== ACCORDION ========== */
+.accordion { border: 1px solid var(--border); border-radius: var(--radius); margin: 10px 0; overflow: hidden; }
+.accordion-btn { width: 100%; padding: 10px 14px; background: #f8f9fa; border: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; font-family: inherit; font-size: 0.82rem; font-weight: 500; color: var(--text); transition: background var(--transition); text-align: left; }
+.accordion-btn:hover { background: #f0f0f0; }
+.accordion-btn .chevron { transition: transform var(--transition); font-size: 0.75rem; color: var(--text-light); }
+.accordion.open .accordion-btn .chevron { transform: rotate(180deg); }
+.accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1); padding: 0 14px; }
+.accordion.open .accordion-content { max-height: 20000px; padding: 10px 14px 14px; }
+.accordion-body { font-size: 0.82rem; line-height: 1.65; color: var(--text); }
+.accordion-body p { margin-bottom: 6px; }
+.accordion-body ul { padding-left: 18px; margin: 4px 0; }
+.accordion-body li { margin-bottom: 3px; }
+.accordion-body strong { font-weight: 600; }
+
+/* ========== BADGES ========== */
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.72rem; font-weight: 600; margin-right: 4px; }
+.badge-green { background: #e8f5e9; color: #2e7d32; }
+.badge-amber { background: #fff8e1; color: #f57f17; }
+.badge-red { background: var(--warning-bg); color: #c62828; }
+.badge-blue { background: #e3f2fd; color: #1565c0; }
+.badge-purple { background: #ede7f6; color: var(--header-dark); }
+
+/* ========== DELIVERY BOX ========== */
+.delivery-box { background: #f8f9fa; border-radius: var(--radius); padding: 14px 16px; margin-top: 12px; font-size: 0.82rem; border: 1px solid #e8e8e8; }
+.delivery-box h4 { font-size: 0.82rem; font-weight: 600; margin-bottom: 6px; color: var(--header-purple); }
+.delivery-box ul { padding-left: 18px; }
+.delivery-box li { margin-bottom: 3px; }
+
+/* ========== MATRIX TABLES ========== */
+.matrix-wrapper { overflow-x: auto; margin: 10px 0; }
+.matrix-table { width: 100%; min-width: 600px; border-collapse: collapse; font-size: 0.8rem; }
+.matrix-table th { background: #f5f5f5; padding: 8px 10px; text-align: left; font-weight: 600; border-bottom: 2px solid var(--border); white-space: nowrap; }
+.matrix-table td { padding: 7px 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+.matrix-table tr:hover td { background: #fafafa; }
+.matrix-table td:not(:first-child) { text-align: center; }
+.matrix-table th:not(:first-child) { text-align: center; }
+.matrix-table tr:last-child td { border-bottom: none; }
+
+/* ========== REFERENCES ========== */
+.references-list { padding-left: 20px; font-size: 0.82rem; line-height: 1.7; }
+.references-list li { margin-bottom: 4px; }
+
+/* ========== FOOTER ========== */
+.footer { text-align: center; padding: 16px; font-size: 0.72rem; color: var(--text-light); border-top: 1px solid var(--border); margin-top: 20px; }
+
+/* ========== PRINT ========== */
+@media print {
+  body { background: #fff; font-size: 9pt; }
+  .header, .toc-bar, .footer, .btn, .accordion-btn { display: none !important; }
+  .main { padding-top: 10px; max-width: 100%; }
+  .care-section { box-shadow: none; border: 1px solid #999; page-break-inside: avoid; }
+  .section-body { padding: 10px 14px; }
+  .accordion-content { max-height: none !important; padding: 10px 14px !important; overflow: visible !important; }
+  .kpi-table, .matrix-table { font-size: 8pt; }
+  .kpi-table th, .kpi-table td, .matrix-table th, .matrix-table td { padding: 4px 6px; }
+}
+
+/* ========== PRESENTATION MODE ========== */
+body.presentation .header { transform: translateY(-100%); }
+body.presentation .main { padding-top: 12px; }
+body.presentation .toc-bar { display: none; }
+body.presentation .intro { display: none; }
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .header-title { font-size: 0.95rem; }
+  .main { padding-top: 75px; }
+  .section-body { padding: 12px 14px; }
+  .toc-bar { gap: 8px; padding: 8px 10px; }
+  .kpi-table { font-size: 0.75rem; }
+  .kpi-table th, .kpi-table td { padding: 6px 8px; }
+  .matrix-table { font-size: 0.75rem; }
+}
+@media (max-width: 480px) {
+  .header-inner { padding: 8px 12px; }
+  .header-title { font-size: 0.85rem; }
+  .btn { padding: 5px 10px; font-size: 0.75rem; }
+  .kpi-table { display: block; overflow-x: auto; white-space: nowrap; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header" id="header">
+  <div class="header-inner">
+    <div>
+      <div class="header-title">Diabetes Mellitus Care Pathway &mdash; Sri Lanka</div>
+      <div class="header-subtitle">KPIs &amp; Training Needs Reference &mdash; All Care Levels</div>
+    </div>
+    <div class="header-actions">
+      <a href="DM Care.html" class="btn btn-primary" style="text-decoration:none;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Pathway
+      </a>
+      <button class="btn btn-primary" onclick="togglePresentation()" title="Toggle presentation mode">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>
+        Presentation
+      </button>
+      <button class="btn btn-primary" onclick="window.print()" title="Print this page">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+        Print
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="main" id="main">
+
+  <div class="intro">
+    <h1>Diabetes Care Pathway &mdash; Key Performance Indicators &amp; Training Needs</h1>
+    <p>National monitoring framework and workforce capacity building across primary, secondary, and tertiary care levels in Sri Lanka.</p>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc-bar">
+    <button class="toc-item" onclick="scrollToSection('primary')">
+      <span class="dot" style="background:var(--primary-accent);"></span> Primary Care
+    </button>
+    <button class="toc-item" onclick="scrollToSection('secondary')">
+      <span class="dot" style="background:var(--secondary-accent);"></span> Secondary Care
+    </button>
+    <button class="toc-item" onclick="scrollToSection('tertiary')">
+      <span class="dot" style="background:var(--tertiary-accent);"></span> Tertiary Care
+    </button>
+    <button class="toc-item" onclick="scrollToSection('matrix')">
+      <span class="dot" style="background:var(--header-purple);"></span> Summary Matrix
+    </button>
+    <button class="toc-item" onclick="scrollToSection('references')">
+      <span class="dot" style="background:var(--amber);"></span> References
+    </button>
+  </div>
+
+  <!-- ============ PRIMARY CARE ============ -->
+  <section class="care-section" id="primary">
+    <div class="section-header header-primary">
+      <span class="badge badge-green">PRIMARY</span>
+      <h2>1. Primary Care Level</h2>
+    </div>
+    <div class="section-body">
+
+      <div class="institution-box">
+        <strong>Institutions:</strong> Arogya Centres, District Hospitals Type A (DH-A), District Hospitals Type B (DH-B), District Hospitals Type C (DH-C), Medical Clinics of the Primary Institution<br>
+        <strong>Role:</strong> First-contact care, screening, diagnosis, initial management, health promotion, disease prevention, stable patient follow-up
+      </div>
+
+      <!-- KPI Table -->
+      <div class="sub-section">
+        <h3><span class="badge badge-green">KPIs</span> Key Performance Indicators &mdash; Primary Care</h3>
+        <table class="kpi-table">
+          <thead>
+            <tr><th>#</th><th>Indicator</th><th>Target</th><th>Data Source</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td><strong>Screening Coverage</strong></td><td>&ge;50% of eligible population screened annually</td><td>WHO NCD target; NCD screening register</td></tr>
+            <tr><td>2</td><td><strong>HbA1c Control</strong></td><td>&ge;60% of patients achieving HbA1c &lt;7%</td><td>Laboratory records; clinic registers</td></tr>
+            <tr><td>3</td><td><strong>Blood Pressure Control</strong></td><td>&ge;70% of patients achieving BP &lt;130/80 mmHg</td><td>Clinic examination records</td></tr>
+            <tr><td>4</td><td><strong>Foot Examination</strong></td><td>&ge;80% annual completion rate</td><td>Clinic documentation audit</td></tr>
+            <tr><td>5</td><td><strong>Retinal Screening</strong></td><td>&ge;80% annual screening rate</td><td>Ophthalmology referral records</td></tr>
+            <tr><td>6</td><td><strong>Referral Timeliness</strong></td><td>100% of screen-positive patients referred within 2 weeks</td><td>Referral register</td></tr>
+            <tr><td>7</td><td><strong>NCD Register Coverage</strong></td><td>100% patient enrollment with unique identifier</td><td>NCD screening register</td></tr>
+            <tr><td>8</td><td><strong>BMI Documentation</strong></td><td>&ge;90% of visits with BMI/waist circumference recorded</td><td>Clinic records audit</td></tr>
+          </tbody>
+        </table>
+
+        <!-- Accordion: Detailed KPI Descriptions -->
+        <div class="accordion" id="accordion-primary-kpis">
+          <button class="accordion-btn" onclick="toggleAccordion(this)">
+            <span>Detailed Indicator Descriptions</span>
+            <span class="chevron">&#9662;</span>
+          </button>
+          <div class="accordion-content">
+            <div class="accordion-body">
+              <div class="accent-primary" style="margin-bottom:10px;">
+                <strong>1. Screening Coverage (&ge;50%)</strong><br>
+                All adults &ge;35 years with risk factors (BMI &ge;23 kg/m&sup2;, family history, hypertension, dyslipidaemia, previous GDM, physical inactivity, smoking) should be screened at least annually using FPG, OGTT, or HbA1c. Coverage is calculated as the proportion of the eligible registered population that receives screening in a calendar year.
+              </div>
+              <div class="accent-primary" style="margin-bottom:10px;">
+                <strong>2. HbA1c Control (&ge;60% &lt;7%)</strong><br>
+                Among all diagnosed Type 2 diabetes patients on the register, at least 60% should achieve HbA1c below 7% (53 mmol/mol) at their most recent measurement. This reflects the quality of glycaemic management at primary care level.
+              </div>
+              <div class="accent-primary" style="margin-bottom:10px;">
+                <strong>3. Blood Pressure Control (&ge;70% &lt;130/80)</strong><br>
+                Among all registered diabetes patients, at least 70% should have blood pressure below 130/80 mmHg, in line with ADA and CPG 2025 targets for comprehensive cardiovascular risk reduction.
+              </div>
+              <div class="accent-primary" style="margin-bottom:10px;">
+                <strong>4. Foot Examination (&ge;80% annual)</strong><br>
+                At least 80% of registered diabetes patients should receive a documented annual foot examination including 10g monofilament testing, 128Hz tuning fork, and visual inspection for ulcers or deformities.
+              </div>
+              <div class="accent-primary" style="margin-bottom:10px;">
+                <strong>5. Retinal Screening (&ge;80% annual)</strong><br>
+                At least 80% of registered diabetes patients should be referred for and complete retinal screening annually, either via direct ophthalmoscopy or fundus photography.
+              </div>
+              <div class="accent-primary" style="margin-bottom:10px;">
+                <strong>6. Referral Timeliness (100% within 2 weeks)</strong><br>
+                All patients with newly detected diabetes complications, uncontrolled diabetes (HbA1c &gt;9%), or diagnostic uncertainty should be referred to secondary care within 2 weeks of detection.
+              </div>
+              <div class="accent-primary" style="margin-bottom:10px;">
+                <strong>7. NCD Register Coverage (100%)</strong><br>
+                Every patient diagnosed with diabetes in the catchment area must be enrolled in the NCD screening register with a unique identifier to enable longitudinal tracking and continuum of care.
+              </div>
+              <div class="accent-primary">
+                <strong>8. BMI Documentation (&ge;90%)</strong><br>
+                Body mass index and waist circumference should be documented in at least 90% of all patient encounters to enable monitoring of metabolic targets and treatment response.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Training Needs Table -->
+      <div class="sub-section">
+        <h3><span class="badge badge-amber">TRAINING</span> Training Needs &mdash; Primary Care</h3>
+        <table class="kpi-table">
+          <thead>
+            <tr><th>#</th><th>Training Topic</th><th>Competency Outcome</th><th>Duration</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td><strong>Diabetes Screening Techniques</strong></td><td>Correct use of FPG, OGTT, HbA1c; interpretation of results; prediabetes vs diabetes classification</td><td>1 day</td></tr>
+            <tr><td>2</td><td><strong>Medical Nutrition Therapy (MNT) Counselling</strong></td><td>Patient-centred dietary advice; meal planning; carbohydrate counting; culturally appropriate guidance for Sri Lankan diets</td><td>2 days</td></tr>
+            <tr><td>3</td><td><strong>Foot Examination</strong></td><td>Proficient use of 10g monofilament, 128Hz tuning fork, pinprick sensation; risk classification (low/moderate/high); ulcer documentation</td><td>1 day</td></tr>
+            <tr><td>4</td><td><strong>Basic Insulin Initiation &amp; Dose Titration</strong></td><td>Safe initiation of basal insulin; starting dose calculation (0.1&ndash;0.2 U/kg); dose adjustment protocols; hypoglycaemia recognition and management</td><td>2 days</td></tr>
+            <tr><td>5</td><td><strong>Recognition &amp; Initial Management of Complications</strong></td><td>Early detection of diabetic retinopathy, nephropathy, neuropathy, foot ulcers; acute complication recognition (DKA/HHS); appropriate escalation pathways</td><td>2 days</td></tr>
+            <tr><td>6</td><td><strong>Patient Education &amp; DSMES Delivery</strong></td><td>Structured diabetes self-management education; motivational interviewing; goal setting; adherence support</td><td>2 days</td></tr>
+            <tr><td>7</td><td><strong>NCD Screening Register Management</strong></td><td>Accurate data entry; patient tracking; defaulter identification; quarterly reporting; use of NCD screening cards</td><td>0.5 day</td></tr>
+            <tr><td>8</td><td><strong>Cardiovascular Risk Stratification</strong></td><td>Correct use of WHO/ISH cardiovascular risk prediction charts; risk factor assessment; aspirin and statin initiation thresholds</td><td>1 day</td></tr>
+          </tbody>
+        </table>
+
+        <!-- Training Delivery Recommendations -->
+        <div class="accordion" id="accordion-primary-training">
+          <button class="accordion-btn" onclick="toggleAccordion(this)">
+            <span>Training Delivery Recommendations</span>
+            <span class="chevron">&#9662;</span>
+          </button>
+          <div class="accordion-content">
+            <div class="accordion-body">
+              <div class="delivery-box">
+                <ul>
+                  <li><strong>Training format:</strong> Mix of didactic lectures, hands-on workshops, case-based discussions, and role-play</li>
+                  <li><strong>Target audience:</strong> Medical Officers, Primary Care Nurses, Public Health Midwives, Community Health Officers</li>
+                  <li><strong>Frequency:</strong> Initial training at induction; refresher training annually</li>
+                  <li><strong>Assessment:</strong> Pre- and post-training knowledge tests; clinical competency checklists; audit of practice against KPIs</li>
+                  <li><strong>Accreditation:</strong> Certificate awarded upon successful completion; linked to continuing professional development (CPD) requirements</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ SECONDARY CARE ============ -->
+  <section class="care-section" id="secondary">
+    <div class="section-header header-secondary">
+      <span class="badge badge-blue">SECONDARY</span>
+      <h2>2. Secondary Care Level</h2>
+    </div>
+    <div class="section-body">
+
+      <div class="institution-box">
+        <strong>Institutions:</strong> Base Hospitals Type A (BH-A), Base Hospitals Type B (BH-B)<br>
+        <strong>Role:</strong> Specialist assessment, complication management, consultant review, advanced diagnostics, nutritional care, eyecare, footcare, MDT coordination, counter-referral of stable patients
+      </div>
+
+      <!-- KPI Table -->
+      <div class="sub-section">
+        <h3><span class="badge badge-blue">KPIs</span> Key Performance Indicators &mdash; Secondary Care</h3>
+        <table class="kpi-table">
+          <thead>
+            <tr><th>#</th><th>Indicator</th><th>Target</th><th>Data Source</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td><strong>Specialist Waiting Time</strong></td><td>&le;2 weeks for routine referrals; &le;48 hours for urgent</td><td>Clinic appointment register</td></tr>
+            <tr><td>2</td><td><strong>Complication Review Rate</strong></td><td>&ge;90% of referred patients receive specialist assessment</td><td>Consultant clinic records</td></tr>
+            <tr><td>3</td><td><strong>HbA1c Improvement</strong></td><td>&ge;50% of referred patients show HbA1c reduction &ge;0.5% within 6 months</td><td>Laboratory tracking system</td></tr>
+            <tr><td>4</td><td><strong>DR Treatment Timeliness</strong></td><td>100% of sight-threatening DR receives laser/anti-VEGF within 2 weeks</td><td>Ophthalmology records</td></tr>
+            <tr><td>5</td><td><strong>Foot Ulcer Healing Rate</strong></td><td>&ge;70% of DFU show reduction in wound size at 12 weeks</td><td>Wound clinic records</td></tr>
+            <tr><td>6</td><td><strong>CV Risk Assessment</strong></td><td>100% completion for all diabetes patients</td><td>Clinic documentation audit</td></tr>
+            <tr><td>7</td><td><strong>Inpatient Mortality</strong></td><td>&lt;5% for diabetes-related admissions</td><td>Hospital information system</td></tr>
+            <tr><td>8</td><td><strong>Counter-Referral Rate</strong></td><td>&ge;40% of stable patients returned to primary care within 6 months</td><td>Counter-referral register</td></tr>
+          </tbody>
+        </table>
+
+        <!-- Accordion: Detailed KPI Descriptions -->
+        <div class="accordion" id="accordion-secondary-kpis">
+          <button class="accordion-btn" onclick="toggleAccordion(this)">
+            <span>Detailed Indicator Descriptions</span>
+            <span class="chevron">&#9662;</span>
+          </button>
+          <div class="accordion-content">
+            <div class="accordion-body">
+              <div class="accent-secondary" style="margin-bottom:10px;">
+                <strong>1. Specialist Waiting Time (Routine &le;2 weeks; Urgent &le;48 hours)</strong><br>
+                The time from receipt of referral to first specialist appointment. Routine referrals include stable patients with complications; urgent referrals include acute foot infection, rapidly deteriorating vision, or metabolic decompensation.
+              </div>
+              <div class="accent-secondary" style="margin-bottom:10px;">
+                <strong>2. Complication Review Rate (&ge;90%)</strong><br>
+                Of all patients referred from primary care for specialist assessment, at least 90% should be seen by a consultant (physician, endocrinologist, or designated diabetes specialist) and receive a documented management plan.
+              </div>
+              <div class="accent-secondary" style="margin-bottom:10px;">
+                <strong>3. HbA1c Improvement (&ge;50% with &ge;0.5% reduction)</strong><br>
+                Among patients referred with suboptimal glycaemic control (HbA1c &gt;8%), at least 50% should demonstrate a clinically meaningful reduction of at least 0.5% (5.5 mmol/mol) within 6 months of specialist intervention.
+              </div>
+              <div class="accent-secondary" style="margin-bottom:10px;">
+                <strong>4. DR Treatment Timeliness (100% within 2 weeks)</strong><br>
+                All patients diagnosed with sight-threatening diabetic retinopathy (proliferative DR, clinically significant macular oedema) must receive laser photocoagulation or intravitreal anti-VEGF therapy within 2 weeks of diagnosis.
+              </div>
+              <div class="accent-secondary" style="margin-bottom:10px;">
+                <strong>5. Foot Ulcer Healing Rate (&ge;70% at 12 weeks)</strong><br>
+                Among patients presenting with diabetic foot ulcers, at least 70% should demonstrate a reduction in wound surface area by week 12, reflecting the effectiveness of wound care protocols including debridement, offloading, and infection management.
+              </div>
+              <div class="accent-secondary" style="margin-bottom:10px;">
+                <strong>6. CV Risk Assessment (100%)</strong><br>
+                Every diabetes patient attending secondary care must have a comprehensive cardiovascular risk assessment documented, including lipid profile, renal function, ECG, and use of WHO/ISH risk charts to guide statin and aspirin therapy.
+              </div>
+              <div class="accent-secondary" style="margin-bottom:10px;">
+                <strong>7. Inpatient Mortality (&lt;5%)</strong><br>
+                The proportion of diabetes-related hospital admissions (DKA, HHS, foot sepsis, stroke, ACS) resulting in in-hospital death should be below 5%, reflecting the quality of acute management.
+              </div>
+              <div class="accent-secondary">
+                <strong>8. Counter-Referral Rate (&ge;40% within 6 months)</strong><br>
+                At least 40% of patients whose condition stabilises after specialist intervention should be formally counter-referred back to primary care with a clear management plan, ensuring efficient use of specialist capacity and continuity of care.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Training Needs Table -->
+      <div class="sub-section">
+        <h3><span class="badge badge-amber">TRAINING</span> Training Needs &mdash; Secondary Care</h3>
+        <table class="kpi-table">
+          <thead>
+            <tr><th>#</th><th>Training Topic</th><th>Competency Outcome</th><th>Duration</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td><strong>Advanced Pharmacotherapy</strong></td><td>Appropriate selection and monitoring of SGLT2 inhibitors, GLP-1 receptor agonists; renal function considerations; cardiovascular outcome data; combination therapy algorithms</td><td>2 days</td></tr>
+            <tr><td>2</td><td><strong>Diabetic Retinopathy: Laser Techniques</strong></td><td>Fundus laser photocoagulation for PDR and CSME; treatment parameters; safety protocols; post-procedure care</td><td>3 days (practical)</td></tr>
+            <tr><td>3</td><td><strong>Advanced Foot Care</strong></td><td>Surgical debridement techniques; total contact casting and offloading; osteomyelitis diagnosis and management; antibiotic stewardship; wound dressings selection</td><td>3 days</td></tr>
+            <tr><td>4</td><td><strong>DKA/HHS Management Protocols</strong></td><td>IV insulin infusion protocols; fluid resuscitation; electrolyte monitoring; transition to subcutaneous insulin; prevention strategies</td><td>1 day</td></tr>
+            <tr><td>5</td><td><strong>Insulin Regimen Intensification</strong></td><td>Basal-bolus regimens; premixed analogue conversion; carbohydrate counting for Type 1 diabetes; pump therapy basics; dose adjustment education</td><td>2 days</td></tr>
+            <tr><td>6</td><td><strong>Comprehensive Cardiovascular Risk Management</strong></td><td>Advanced lipid management (high-intensity statins, ezetimibe, PCSK9 inhibitors); antihypertensive combinations; antiplatelet therapy; heart failure management in diabetes</td><td>2 days</td></tr>
+            <tr><td>7</td><td><strong>Diabetes in Pregnancy</strong></td><td>Pre-conception counselling; glycaemic targets in GDM and pre-existing diabetes; insulin management in pregnancy; fetal monitoring; postpartum follow-up</td><td>2 days</td></tr>
+            <tr><td>8</td><td><strong>Multi-Disciplinary Team Coordination</strong></td><td>Effective case conferencing; MDT meeting facilitation; communication protocols with primary care; care pathway navigation; complex case discussion</td><td>1 day</td></tr>
+          </tbody>
+        </table>
+
+        <!-- Training Delivery Recommendations -->
+        <div class="accordion" id="accordion-secondary-training">
+          <button class="accordion-btn" onclick="toggleAccordion(this)">
+            <span>Training Delivery Recommendations</span>
+            <span class="chevron">&#9662;</span>
+          </button>
+          <div class="accordion-content">
+            <div class="accordion-body">
+              <div class="delivery-box">
+                <ul>
+                  <li><strong>Training format:</strong> Case-based learning, simulation workshops, hands-on procedural training, journal clubs</li>
+                  <li><strong>Target audience:</strong> Consultant Physicians, Registrars, Medical Officers, Specialist Nurses, Ophthalmologists, Podiatrists</li>
+                  <li><strong>Frequency:</strong> Continuous professional development; quarterly MDT learning sessions; annual skills update</li>
+                  <li><strong>Assessment:</strong> Case portfolio review; practical skills assessment; patient outcome audit; 360-degree feedback</li>
+                  <li><strong>Accreditation:</strong> CPD credits through Sri Lanka Medical Council or College of Physicians</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ TERTIARY CARE ============ -->
+  <section class="care-section" id="tertiary">
+    <div class="section-header header-tertiary">
+      <span class="badge badge-purple">TERTIARY</span>
+      <h2>3. Tertiary Care Level</h2>
+    </div>
+    <div class="section-body">
+
+      <div class="institution-box">
+        <strong>Institutions:</strong> National Hospitals (NH), Provincial General Hospitals (PGH), Teaching Hospitals (TH), District General Hospitals (DGH)<br>
+        <strong>Role:</strong> Complex case management, specialised procedures (transplant, revascularisation), critical care, advanced rehabilitation, training of lower-level staff, research, programme leadership
+      </div>
+
+      <!-- KPI Table -->
+      <div class="sub-section">
+        <h3><span class="badge badge-purple">KPIs</span> Key Performance Indicators &mdash; Tertiary Care</h3>
+        <table class="kpi-table">
+          <thead>
+            <tr><th>#</th><th>Indicator</th><th>Target</th><th>Data Source</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td><strong>Complex Case Resolution</strong></td><td>&ge;85% of referred cases receive definitive management plan</td><td>MDT meeting records</td></tr>
+            <tr><td>2</td><td><strong>Amputation Prevention</strong></td><td>&ge;90% of high-risk feet avoid major amputation</td><td>Surgical/vascular records</td></tr>
+            <tr><td>3</td><td><strong>Renal Transplant Survival</strong></td><td>1-year graft survival &ge;85% for diabetic patients</td><td>Transplant registry</td></tr>
+            <tr><td>4</td><td><strong>Emergency Survival Rate</strong></td><td>&ge;95% survival for DKA/HHS managed in ICU</td><td>ICU discharge records</td></tr>
+            <tr><td>5</td><td><strong>Training Output</strong></td><td>&ge;2 training sessions conducted annually for lower-level staff</td><td>Training records</td></tr>
+            <tr><td>6</td><td><strong>Research Output</strong></td><td>&ge;1 peer-reviewed publication per annum per unit</td><td>Publication database</td></tr>
+            <tr><td>7</td><td><strong>Patient Satisfaction</strong></td><td>&ge;85% satisfaction score for specialist services</td><td>Patient survey</td></tr>
+            <tr><td>8</td><td><strong>MDT Completion Rate</strong></td><td>100% of complex cases discussed at multidisciplinary team meeting</td><td>MDT attendance records</td></tr>
+          </tbody>
+        </table>
+
+        <!-- Accordion: Detailed KPI Descriptions -->
+        <div class="accordion" id="accordion-tertiary-kpis">
+          <button class="accordion-btn" onclick="toggleAccordion(this)">
+            <span>Detailed Indicator Descriptions</span>
+            <span class="chevron">&#9662;</span>
+          </button>
+          <div class="accordion-content">
+            <div class="accordion-body">
+              <div class="accent-tertiary" style="margin-bottom:10px;">
+                <strong>1. Complex Case Resolution (&ge;85%)</strong><br>
+                Of all patients referred to tertiary care with complex or refractory diabetes (Type 1 diabetes, monogenic diabetes, steroid-induced diabetes, ketosis-prone diabetes, recurrent DKA, brittle diabetes), at least 85% should receive a definitive specialist management plan within 4 weeks of first appointment.
+              </div>
+              <div class="accent-tertiary" style="margin-bottom:10px;">
+                <strong>2. Amputation Prevention (&ge;90%)</strong><br>
+                Among patients classified as high-risk for major amputation (severe peripheral arterial disease, Charcot neuroarthropathy, non-healing ulcers with osteomyelitis), at least 90% should avoid below-knee or above-knee amputation through vascular intervention, advanced wound care, and multidisciplinary management.
+              </div>
+              <div class="accent-tertiary" style="margin-bottom:10px;">
+                <strong>3. Renal Transplant Survival (&ge;85% at 1 year)</strong><br>
+                For diabetic patients receiving renal transplantation (simultaneous kidney-pancreas or kidney-alone), the 1-year graft survival rate should be at least 85%, benchmarked against international transplant registries.
+              </div>
+              <div class="accent-tertiary" style="margin-bottom:10px;">
+                <strong>4. Emergency Survival Rate (&ge;95%)</strong><br>
+                Among patients admitted to ICU with diabetic emergencies (severe DKA, HHS, hypoglycaemic coma), at least 95% should survive to ICU discharge, reflecting the quality of critical care management.
+              </div>
+              <div class="accent-tertiary" style="margin-bottom:10px;">
+                <strong>5. Training Output (&ge;2 sessions annually)</strong><br>
+                Each tertiary centre must conduct at least 2 structured training sessions per year for primary and secondary care staff, including clinical updates, skills workshops, and case discussion forums.
+              </div>
+              <div class="accent-tertiary" style="margin-bottom:10px;">
+                <strong>6. Research Output (&ge;1 publication per unit)</strong><br>
+                Each tertiary diabetes unit should contribute at least one peer-reviewed publication per year to the national and international evidence base, supporting quality improvement and policy development.
+              </div>
+              <div class="accent-tertiary" style="margin-bottom:10px;">
+                <strong>7. Patient Satisfaction (&ge;85%)</strong><br>
+                Patient satisfaction scores for specialist diabetes services, measured through structured surveys covering access, communication, clinical care, and coordination, should be at least 85%.
+              </div>
+              <div class="accent-tertiary">
+                <strong>8. MDT Completion Rate (100%)</strong><br>
+                Every complex case (as defined by the tertiary referral criteria) must be formally discussed at a multidisciplinary team meeting with documented attendance from relevant specialties (endocrinology, nephrology, ophthalmology, vascular surgery, podiatry, nutrition).
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Training Needs Table -->
+      <div class="sub-section">
+        <h3><span class="badge badge-amber">TRAINING</span> Training Needs &mdash; Tertiary Care</h3>
+        <table class="kpi-table">
+          <thead>
+            <tr><th>#</th><th>Training Topic</th><th>Competency Outcome</th><th>Duration</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td><strong>Advanced Surgical Techniques</strong></td><td>Vascular revascularisation (bypass, angioplasty) for diabetic foot; renal transplantation; amputation level selection; wound closure techniques</td><td>Fellowship-level (6&ndash;12 months)</td></tr>
+            <tr><td>2</td><td><strong>Complex Diabetes Management</strong></td><td>Type 1 diabetes advanced management; monogenic diabetes (MODY) genetic testing and counselling; steroid-induced diabetes; ketosis-prone diabetes (KPD); brittle diabetes pump therapy</td><td>3 days</td></tr>
+            <tr><td>3</td><td><strong>Advanced Renal Replacement Therapy</strong></td><td>Dialysis modality selection (HD vs PD); transplant immunosuppression; rejection management; long-term transplant care; vascular access creation and maintenance</td><td>Fellowship-level</td></tr>
+            <tr><td>4</td><td><strong>Critical Care for Diabetic Emergencies</strong></td><td>ICU management of severe DKA/HHS; continuous insulin infusion protocols; electrolyte disturbances; sepsis management in diabetes; ventilator management</td><td>2 days</td></tr>
+            <tr><td>5</td><td><strong>Research Methodology</strong></td><td>Study design (RCT, cohort, cross-sectional); data analysis using SPSS/R; ethical approval process; manuscript writing; grant application; evidence-based practice</td><td>3 days</td></tr>
+            <tr><td>6</td><td><strong>Health Systems Leadership</strong></td><td>Strategic planning; resource allocation; policy development; quality improvement methodology; programme evaluation; stakeholder engagement</td><td>2 days</td></tr>
+            <tr><td>7</td><td><strong>Palliative Care for End-Stage Complications</strong></td><td>Pain management in diabetic neuropathy; end-of-life care for ESRD; diabetic foot palliation; psychosocial support; family counselling</td><td>1 day</td></tr>
+            <tr><td>8</td><td><strong>Training-of-Trainers Methodology</strong></td><td>Adult learning principles; curriculum design; teaching skills assessment; feedback techniques; mentorship; cascade training models for national scale-up</td><td>2 days</td></tr>
+          </tbody>
+        </table>
+
+        <!-- Training Delivery Recommendations -->
+        <div class="accordion" id="accordion-tertiary-training">
+          <button class="accordion-btn" onclick="toggleAccordion(this)">
+            <span>Training Delivery Recommendations</span>
+            <span class="chevron">&#9662;</span>
+          </button>
+          <div class="accordion-content">
+            <div class="accordion-body">
+              <div class="delivery-box">
+                <ul>
+                  <li><strong>Training format:</strong> Fellowships, subspecialty rotations, national workshops, international preceptorships, research collaborations</li>
+                  <li><strong>Target audience:</strong> Senior Consultants, Endocrinologists, Surgeons, ICU Specialists, Research Fellows, Programme Managers</li>
+                  <li><strong>Frequency:</strong> Fellowship programmes (1&ndash;2 years); subspecialty rotations (3&ndash;6 months); annual national conferences</li>
+                  <li><strong>Assessment:</strong> Fellowship exit exams; research thesis; leadership project portfolio; peer review of teaching</li>
+                  <li><strong>Accreditation:</strong> Board certification; university affiliation; international college membership (RCP, ADA, EASD)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ SUMMARY MATRIX ============ -->
+  <section class="care-section" id="matrix">
+    <div class="section-header header-matrix">
+      <span class="badge badge-purple">SUMMARY</span>
+      <h2>4. Summary Matrix</h2>
+    </div>
+    <div class="section-body">
+
+      <div class="sub-section">
+        <h3><span class="badge badge-blue">KPIs</span> KPI Summary Across All Levels</h3>
+        <div class="matrix-wrapper">
+          <table class="matrix-table">
+            <thead>
+              <tr><th>KPI Domain</th><th>Primary Care</th><th>Secondary Care</th><th>Tertiary Care</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Screening/Access</strong></td><td>&ge;50% screened</td><td>&le;2 weeks wait</td><td>&ge;85% resolved</td></tr>
+              <tr><td><strong>Glycaemic Control</strong></td><td>&ge;60% HbA1c &lt;7%</td><td>&ge;50% improve &ge;0.5%</td><td>Complex case management</td></tr>
+              <tr><td><strong>BP Control</strong></td><td>&ge;70% &lt;130/80</td><td>100% CV risk assessed</td><td>Critical care &ge;95% survival</td></tr>
+              <tr><td><strong>Complications</strong></td><td>&ge;80% foot/retinal</td><td>&ge;70% DFU healing</td><td>&ge;90% amputation prevented</td></tr>
+              <tr><td><strong>Process/Register</strong></td><td>100% NCD register</td><td>&ge;90% reviewed</td><td>100% MDT discussed</td></tr>
+              <tr><td><strong>Continuum of Care</strong></td><td>100% referred &lt;2 weeks</td><td>&ge;40% counter-referred</td><td>&ge;2 training sessions/year</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="sub-section">
+        <h3><span class="badge badge-amber">TRAINING</span> Training Summary Across All Levels</h3>
+        <div class="matrix-wrapper">
+          <table class="matrix-table">
+            <thead>
+              <tr><th>Training Domain</th><th>Primary Care</th><th>Secondary Care</th><th>Tertiary Care</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Screening/Diagnosis</strong></td><td>FPG, OGTT, HbA1c</td><td>&mdash;</td><td>Complex diabetes (Type 1, MODY, KPD)</td></tr>
+              <tr><td><strong>Medical Management</strong></td><td>MNT, basic insulin</td><td>Advanced pharmacotherapy (SGLT2i, GLP-1 RA)</td><td>Critical care, ICU protocols</td></tr>
+              <tr><td><strong>Foot Care</strong></td><td>Monofilament, basic exam</td><td>Debridement, offloading, infection</td><td>Vascular surgery, revascularisation</td></tr>
+              <tr><td><strong>Eye Care</strong></td><td>Retinal screening referral</td><td>Laser photocoagulation</td><td>Advanced retinal surgery</td></tr>
+              <tr><td><strong>Cardiovascular</strong></td><td>Risk stratification (WHO charts)</td><td>Comprehensive CV risk management</td><td>Heart failure, transplant</td></tr>
+              <tr><td><strong>Patient Education</strong></td><td>DSMES delivery</td><td>Diabetes in pregnancy</td><td>Palliative care</td></tr>
+              <tr><td><strong>Data/Register</strong></td><td>NCD register entry</td><td>Counter-referral coordination</td><td>Research methodology</td></tr>
+              <tr><td><strong>Systems/Leadership</strong></td><td>&mdash;</td><td>MDT coordination</td><td>Health systems leadership, training-of-trainers</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ REFERENCES ============ -->
+  <section class="care-section" id="references">
+    <div class="section-header header-references">
+      <span class="badge badge-amber">REFERENCES</span>
+      <h2>References</h2>
+    </div>
+    <div class="section-body">
+      <ol class="references-list">
+        <li>Clinical Practice Guideline: Diabetes Mellitus 2025 (Second Edition). Ministry of Health, Sri Lanka.</li>
+        <li>National Non-Communicable Disease Programme, Ministry of Health, Sri Lanka.</li>
+        <li>Diabetes Management Handbook for Primary Care Providers. National NCD Programme, Sri Lanka.</li>
+        <li>Diabetes Management for Secondary and Tertiary Care Providers. National NCD Programme, Sri Lanka.</li>
+        <li>American Diabetes Association. Standards of Care in Diabetes 2025. <em>Diabetes Care</em> 2025;48(Suppl 1).</li>
+        <li>World Health Organization. Package of Essential Noncommunicable Disease Interventions (WHO-PEN) for Primary Health Care.</li>
+        <li>International Diabetes Federation. IDF Diabetes Atlas (10th Edition). Brussels: IDF; 2023.</li>
+      </ol>
+      <p style="font-size:0.8rem; color: var(--text-light); margin-top: 14px; font-style: italic;">
+        Document prepared to support the National Diabetes Mellitus Care Pathway implementation across primary, secondary, and tertiary care levels in Sri Lanka.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer" id="footer">
+  Adapted from the Sri Lanka Clinical Practice Guideline: Diabetes 2025 (Second Edition) &amp; National NCD Programme | Ministry of Health | Developed by Dr. Rejie Jay &copy; May 2026
+</footer>
+
+<script>
+// ========== TOC SCROLL ==========
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    const headerOffset = 75;
+    const elementPosition = el.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+    window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+  }
+}
+
+// ========== ACCORDION ==========
+function toggleAccordion(btn) {
+  const accordion = btn.parentElement;
+  const isOpen = accordion.classList.contains("open");
+  // Close all accordions in same parent section (optional - keeping all independent)
+  if (isOpen) {
+    accordion.classList.remove("open");
+  } else {
+    accordion.classList.add("open");
+  }
+}
+
+// ========== PRESENTATION MODE ==========
+let presentationMode = false;
+function togglePresentation() {
+  presentationMode = !presentationMode;
+  document.body.classList.toggle("presentation", presentationMode);
+}
+
+// Keyboard: P toggles presentation
+// Escape key closes any open accordion only if no modal (not applicable here)
+document.addEventListener("keydown", e => {
+  if (e.key === "p" || e.key === "P") togglePresentation();
+});
+</script>
+
+</body>
+</html>
