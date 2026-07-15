@@ -387,6 +387,38 @@ body.presentation .intro { display: none; }
   .modal-comments-container.open { max-height: 450px; }
   .modal-comments-list { max-height: 220px; }
 }
+
+/* ========== MODAL EDIT MODE ========== */
+.modal-edit-btn { padding: 6px 12px; background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: #fff; border: none; border-radius: var(--radius-sm); font-family: inherit; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all var(--transition); display: inline-flex; align-items: center; gap: 5px; margin-right: 8px; }
+.modal-edit-btn:hover { background: linear-gradient(135deg, #ffa726 0%, #ef6c00 100%); transform: translateY(-1px); }
+.modal-edit-btn svg { flex-shrink: 0; }
+.modal-edit-toolbar { display: none; align-items: center; justify-content: space-between; padding: 10px 18px; background: linear-gradient(135deg, #fff8e1 0%, #fffde7 100%); border-top: 1px solid #ffe082; border-bottom: 1px solid var(--border); flex-shrink: 0; gap: 10px; flex-wrap: wrap; }
+.modal-edit-toolbar.active { display: flex; }
+.edit-toolbar-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.edit-toolbar-right { display: flex; align-items: center; gap: 8px; }
+.edit-badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; background: #e53935; color: #fff; border-radius: 10px; font-size: 0.72rem; font-weight: 700; animation: badgePulse 1.5s ease-in-out infinite; }
+@keyframes badgePulse { 0%,100% { opacity: 1; } 50% { opacity: 0.7; } }
+.edit-last-saved { font-size: 0.75rem; color: var(--text-light); }
+.btn-save { padding: 6px 14px; background: var(--primary-dark); color: #fff; border: none; border-radius: var(--radius-sm); font-family: inherit; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: background var(--transition); display: inline-flex; align-items: center; gap: 4px; }
+.btn-save:hover { background: #388e3c; }
+.btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-cancel-edit { padding: 6px 14px; background: #f5f5f5; color: var(--text); border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.78rem; font-weight: 500; cursor: pointer; transition: background var(--transition); }
+.btn-cancel-edit:hover { background: #e0e0e0; }
+.modal-body.editing .modal-section { border: 1px dashed #ff9800; border-radius: 6px; padding: 8px; margin-bottom: 12px; transition: border-color 0.2s; }
+.modal-body.editing .modal-section:hover { border-color: #f57c00; background: rgba(255,152,0,0.03); }
+.modal-body.editing h3 { background: rgba(255,152,0,0.08); padding: 4px 8px; border-radius: 4px; }
+.modal-body.editing td, .modal-body.editing th { border: 1px dashed #ddd; }
+/* Edit password overlay reuses pw-overlay */
+
+
+/* Toast animations */
+@keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+@keyframes toastOut { from { opacity: 1; transform: translateX(-50%) translateY(0); } to { opacity: 0; transform: translateX(-50%) translateY(20px); } }
+
+/* Print hide for edit elements */
+@media print {
+  .modal-edit-btn, .modal-edit-toolbar, #editPwOverlay, #editToast { display: none !important; }
+}
 </style>
 </head>
 <body>
@@ -549,7 +581,26 @@ body.presentation .intro { display: none; }
   <div class="modal-card" id="modalCard">
     <div class="modal-header" id="modalHeader">
       <h2 id="modalTitle">Title</h2>
-      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <div style="display:flex;align-items:center;">
+        <button class="modal-edit-btn" id="modalEditBtn" onclick="promptEditModal()" title="Edit this content">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Edit
+        </button>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+    </div>
+    <div class="modal-edit-toolbar" id="modalEditToolbar">
+      <div class="edit-toolbar-left">
+        <span class="edit-badge">&#9679; EDITING</span>
+        <span class="edit-last-saved" id="editLastSaved"></span>
+      </div>
+      <div class="edit-toolbar-right">
+        <button class="btn-cancel-edit" onclick="cancelEditMode()">Cancel</button>
+        <button class="btn-save" id="btnSaveContent" onclick="saveModalContent()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save Changes
+        </button>
+      </div>
     </div>
     <div class="modal-body" id="modalBody"></div>
   </div>
@@ -608,7 +659,7 @@ function ensureDefs() {
 }
 
 // ========== CLINICAL DATA ==========
-const CLINICAL_DATA = {
+const DEFAULT_CLINICAL_DATA = {
 
 // ===== PRIMARY CARE PACKAGE =====
 "primary_care_package": {
@@ -1903,14 +1954,277 @@ let modalCommentsRef = null;
 let modalCommentsListener = null;
 let currentModalId = null;
 
+// ========== MODAL CONTENT EDIT STATE ==========
+let modalContentRef = null;
+let modalContentListener = null;
+let isEditMode = false;
+let currentModalData = null;
+const EDIT_PASSWORD = "112233";
+
+// ========== MODAL DATA LOADER ==========
+async function loadModalData(id) {
+  // First check Firebase for live content
+  if (typeof firebase !== "undefined" && firebase.apps && firebase.apps.length > 0) {
+    try {
+      const db = firebase.database();
+      const snapshot = await db.ref("dmc_modal_content/" + id).once("value");
+      if (snapshot.exists()) {
+        const fbData = snapshot.val();
+        return {
+          title: fbData.title || DEFAULT_CLINICAL_DATA[id].title,
+          accent: fbData.accent || DEFAULT_CLINICAL_DATA[id].accent,
+          content: fbData.content || DEFAULT_CLINICAL_DATA[id].content
+        };
+      }
+    } catch (err) {
+      console.warn("Firebase content load error for " + id + ":", err);
+    }
+  }
+  // Fallback to hardcoded defaults
+  return DEFAULT_CLINICAL_DATA[id] || null;
+}
+
+// ========== REAL-TIME CONTENT SYNC ==========
+function setupContentSync(id) {
+  // Clean up previous listener
+  if (modalContentListener && modalContentRef) {
+    modalContentRef.off("value", modalContentListener);
+  }
+
+  if (typeof firebase !== "undefined" && firebase.apps && firebase.apps.length > 0) {
+    try {
+      const db = firebase.database();
+      modalContentRef = db.ref("dmc_modal_content/" + id);
+      modalContentListener = modalContentRef.on("value", snapshot => {
+        // Only update if not currently editing
+        if (isEditMode || !snapshot.exists()) return;
+
+        const fbData = snapshot.val();
+        const titleEl = document.getElementById("modalTitle");
+        const bodyEl = document.getElementById("modalBody");
+        if (!titleEl || !bodyEl) return;
+
+        // Check if content actually changed
+        const newTitle = fbData.title || DEFAULT_CLINICAL_DATA[id]?.title || "";
+        const newContent = fbData.content || DEFAULT_CLINICAL_DATA[id]?.content || "";
+
+        if (titleEl.innerHTML !== newTitle) {
+          titleEl.innerHTML = newTitle;
+        }
+
+        // Only update content portion (before comments section)
+        const commentsHTML = buildModalCommentsHTML(id);
+        const currentBody = bodyEl.innerHTML;
+        const newBody = newContent + commentsHTML;
+
+        if (currentBody !== newBody) {
+          bodyEl.innerHTML = newBody;
+          // Re-init comments since we replaced innerHTML
+          setTimeout(() => initModalComments(id), 50);
+
+          // Show a subtle toast
+          showEditToast("Content updated by another user");
+        }
+
+        // Update last saved info
+        if (fbData.lastEditedBy && fbData.lastEditedAt) {
+          const savedEl = document.getElementById("editLastSaved");
+          if (savedEl) {
+            const time = formatTime(fbData.lastEditedAt);
+            savedEl.textContent = "Last edited by " + fbData.lastEditedBy + " at " + time;
+          }
+        }
+      });
+    } catch (err) {
+      console.warn("Content sync setup error:", err);
+    }
+  }
+}
+
+function showEditToast(message) {
+  // Remove existing toast
+  const existing = document.getElementById("editToast");
+  if (existing) existing.remove();
+
+  const toast = document.createElement("div");
+  toast.id = "editToast";
+  toast.style.cssText = "position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:20px;font-size:0.82rem;z-index:5000;animation:toastIn 0.3s ease;";
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.animation = "toastOut 0.3s ease forwards";
+    setTimeout(() => toast.remove(), 300);
+  }, 2500);
+}
+
+// ========== EDIT MODE FUNCTIONS ==========
+function resetEditUI() {
+  isEditMode = false;
+  const toolbar = document.getElementById("modalEditToolbar");
+  const body = document.getElementById("modalBody");
+  const editBtn = document.getElementById("modalEditBtn");
+
+  if (toolbar) toolbar.classList.remove("active");
+  if (body) body.classList.remove("editing");
+  if (body) body.setAttribute("contenteditable", "false");
+  if (editBtn) editBtn.style.display = "inline-flex";
+}
+
+function promptEditModal() {
+  const overlay = document.getElementById("editPwOverlay");
+  const input = document.getElementById("editPwInput");
+  const error = document.getElementById("editPwError");
+
+  if (overlay) {
+    overlay.classList.add("active");
+    if (input) { input.value = ""; input.focus(); }
+    if (error) error.style.display = "none";
+  }
+}
+
+function closeEditPwModal() {
+  const overlay = document.getElementById("editPwOverlay");
+  if (overlay) overlay.classList.remove("active");
+}
+
+function confirmEditPw() {
+  const input = document.getElementById("editPwInput");
+  const error = document.getElementById("editPwError");
+  const pw = input ? input.value : "";
+
+  if (pw === EDIT_PASSWORD) {
+    closeEditPwModal();
+    enableEditMode();
+  } else {
+    if (error) {
+      error.style.display = "block";
+      error.textContent = "Incorrect password. Please try again.";
+    }
+    if (input) { input.value = ""; input.focus(); }
+  }
+}
+
+function enableEditMode() {
+  if (!currentModalId) return;
+  isEditMode = true;
+
+  const body = document.getElementById("modalBody");
+  const toolbar = document.getElementById("modalEditToolbar");
+  const editBtn = document.getElementById("modalEditBtn");
+
+  if (toolbar) toolbar.classList.add("active");
+  if (editBtn) editBtn.style.display = "none";
+
+  if (body) {
+    body.classList.add("editing");
+    body.setAttribute("contenteditable", "true");
+  }
+
+  // Update last saved info
+  const savedEl = document.getElementById("editLastSaved");
+  if (savedEl && modalContentRef) {
+    modalContentRef.once("value", snap => {
+      if (snap.exists() && snap.val().lastEditedBy) {
+        const d = snap.val();
+        const t = d.lastEditedAt ? formatTime(d.lastEditedAt) : "unknown";
+        savedEl.textContent = "Last edited by " + d.lastEditedBy + " at " + t;
+      } else {
+        savedEl.textContent = "Using default content - not yet edited";
+      }
+    });
+  }
+
+  showEditToast("Edit mode enabled - click any text to edit");
+}
+
+function cancelEditMode() {
+  if (!currentModalId) return;
+  isEditMode = false;
+
+  // Reload original content
+  const data = currentModalData;
+  if (data) {
+    document.getElementById("modalBody").innerHTML = data.content + buildModalCommentsHTML(currentModalId);
+    setTimeout(() => initModalComments(currentModalId), 50);
+  }
+
+  resetEditUI();
+}
+
+async function saveModalContent() {
+  if (!currentModalId || !isEditMode) return;
+
+  const saveBtn = document.getElementById("btnSaveContent");
+  const body = document.getElementById("modalBody");
+  const nameInput = document.getElementById("modalCommentName");
+
+  const name = (nameInput && nameInput.value.trim()) || localStorage.getItem("dmcare_comment_name") || "Anonymous";
+
+  // Extract content HTML (everything before the comments section)
+  const fullHTML = body.innerHTML;
+  const commentsMarker = '<div class="modal-comments-section"';
+  const contentEndIdx = fullHTML.indexOf(commentsMarker);
+  const contentHTML = contentEndIdx > -1 ? fullHTML.substring(0, contentEndIdx) : fullHTML;
+
+  const title = document.getElementById("modalTitle").innerHTML;
+
+  if (saveBtn) {
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Saving...';
+  }
+
+  try {
+    const db = firebase.database();
+    await db.ref("dmc_modal_content/" + currentModalId).set({
+      title: title,
+      accent: currentModalData.accent,
+      content: contentHTML,
+      lastEditedBy: name,
+      lastEditedAt: firebase.database.ServerValue.TIMESTAMP
+    });
+
+    // Update current data
+    currentModalData = { title: title, accent: currentModalData.accent, content: contentHTML };
+
+    // Exit edit mode but keep changes
+    isEditMode = false;
+    if (body) {
+      body.classList.remove("editing");
+      body.setAttribute("contenteditable", "false");
+    }
+    const toolbar = document.getElementById("modalEditToolbar");
+    if (toolbar) toolbar.classList.remove("active");
+    const editBtn = document.getElementById("modalEditBtn");
+    if (editBtn) editBtn.style.display = "inline-flex";
+
+    showEditToast("Changes saved successfully!");
+
+  } catch (err) {
+    console.error("Save error:", err);
+    alert("Failed to save changes. Error: " + (err.message || "Unknown error"));
+  } finally {
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Changes';
+    }
+  }
+}
+
 // ========== MODAL FUNCTIONS ==========
-function openModal(id) {
-  const data = CLINICAL_DATA[id];
+async function openModal(id) {
+  const data = await loadModalData(id);
   if (!data) {
     console.warn("No clinical data found for: " + id);
     return;
   }
   currentModalId = id;
+  currentModalData = data;
+  isEditMode = false;
+
+  // Reset edit UI
+  resetEditUI();
+
   document.getElementById("modalTitle").innerHTML = data.title;
   document.getElementById("modalBody").innerHTML = data.content + buildModalCommentsHTML(id);
   const header = document.getElementById("modalHeader");
@@ -1920,9 +2234,10 @@ function openModal(id) {
 
   // Initialize Firebase comments for this modal
   setTimeout(() => initModalComments(id), 50);
-}
 
-function closeModal() {
+  // Set up real-time content sync
+  setupContentSync(id);
+}function closeModal() {
   document.getElementById("modalOverlay").classList.remove("active");
   document.body.style.overflow = "";
 
@@ -1932,7 +2247,17 @@ function closeModal() {
     modalCommentsListener = null;
   }
   modalCommentsRef = null;
+
+  // Clean up content sync listeners
+  if (modalContentListener && modalContentRef) {
+    modalContentRef.off("value", modalContentListener);
+    modalContentListener = null;
+  }
+  modalContentRef = null;
+
+  isEditMode = false;
   currentModalId = null;
+  currentModalData = null;
 }
 
 
@@ -2154,7 +2479,7 @@ function initSvgInteractivity() {
     rect.addEventListener("click", function(e) {
       e.stopPropagation();
       const id = this.getAttribute("data-id");
-      if (id && CLINICAL_DATA[id]) {
+      if (id && DEFAULT_CLINICAL_DATA[id]) {
         openModal(id);
       }
     });
@@ -2195,7 +2520,7 @@ function initSvgInteractivity() {
     rect.addEventListener("touchend", function(e) {
       this.style.opacity = "";
       const id = this.getAttribute("data-id");
-      if (id && CLINICAL_DATA[id]) {
+      if (id && DEFAULT_CLINICAL_DATA[id]) {
         setTimeout(() => openModal(id), 100);
       }
     }, { passive: true });
@@ -2210,7 +2535,7 @@ function buildPrintAnnexures() {
   if (!container) return;
   let html = '<h2 style="text-align:center;margin:20px 0;font-size:1.2rem;color:#5e35b1;">Annexures: Clinical Content Reference</h2>';
 
-  Object.entries(CLINICAL_DATA).forEach(([key, data]) => {
+  Object.entries(DEFAULT_CLINICAL_DATA).forEach(([key, data]) => {
     html += '<div style="page-break-inside:avoid;margin-bottom:20px;border:1px solid #ddd;border-radius:8px;overflow:hidden;">';
     html += '<div style="background:linear-gradient(135deg,#5e35b1,#4527a0);color:#fff;padding:10px 16px;font-weight:600;font-size:0.95rem;">' + data.title + '</div>';
     html += '<div style="padding:12px 16px;font-size:0.82rem;">' + data.content + '</div>';
@@ -2515,6 +2840,21 @@ document.addEventListener("DOMContentLoaded", () => {
   initCommentSystem();
 });
 </script>
+
+
+<!-- PASSWORD MODAL FOR EDITING -->
+<div class="pw-overlay" id="editPwOverlay" onclick="if(event.target===this)closeEditPwModal()">
+  <div class="pw-card">
+    <h3>Edit Content</h3>
+    <p>Enter the admin password to edit this clinical content.</p>
+    <input type="password" id="editPwInput" placeholder="Enter password" onkeydown="if(event.key==='Enter')confirmEditPw()">
+    <div class="pw-buttons">
+      <button class="pw-cancel" onclick="closeEditPwModal()">Cancel</button>
+      <button class="pw-confirm" onclick="confirmEditPw()">Unlock</button>
+    </div>
+    <div class="pw-error" id="editPwError">Incorrect password. Please try again.</div>
+  </div>
+</div>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
