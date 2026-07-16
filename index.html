@@ -427,7 +427,7 @@ body.presentation .intro { display: none; }
 <header class="header" id="header">
   <div class="header-inner">
     <div>
-      <div class="header-title">Diabetes Mellitus Care Pathway &mdash; Sri Lanka | <span style="color:#DDA0DD;">https://</span><span style="color:#FFC107;">h1.nu/dmcp</span></div>
+      <div class="header-title">Diabetes Mellitus Care Pathway &mdash; Sri Lanka | <span style="color:#DDA0DD;">https://</span><span style="color:#FFC107;">h1.nu/dmcare</span></div>
       <div class="header-subtitle">Interactive SVG Reference for Visualization and Optimization</div>
     </div>
     <div class="header-actions">
@@ -486,9 +486,9 @@ body.presentation .intro { display: none; }
       <rect class="svg-interactive hs-node" x="385.23" y="340.41" width="20.46" height="20.46" rx="10.23" data-id="node_b" data-letter="B"><title>B: Primary Care Registration</title></rect>
       <rect class="svg-interactive hs-node" x="499.43" y="433.27" width="21.49" height="22.52" rx="10.74" data-id="node_c" data-letter="C"><title>C: Primary &rarr; Secondary Referral</title></rect>
       <rect class="svg-interactive hs-node" x="500.82" y="634.32" width="21.49" height="22.52" rx="10.74" data-id="node_d" data-letter="D"><title>D: Secondary &rarr; Tertiary Referral</title></rect>
-      <rect class="svg-interactive hs-node" x="588.84" y="636.31" width="22.52" height="21.49" rx="11.26" data-id="node_e" data-letter="E"><title>E: Primary Inward Care</title></rect>
-      <rect class="svg-interactive hs-node" x="588.33" y="433.03" width="23.55" height="23.55" rx="11.77" data-id="node_f" data-letter="F"><title>F: Secondary Inward Care</title></rect>
-      <rect class="svg-interactive hs-node" x="633.39" y="528.34" width="29.72" height="30.23" rx="14.86" data-id="node_g" data-letter="G"><title>G: Tertiary Inward Care</title></rect>
+      <rect class="svg-interactive hs-node" x="588.84" y="636.31" width="22.52" height="21.49" rx="11.26" data-id="node_e" data-letter="E"><title>E: Back Referral from Tertiary to Secondary Care</title></rect>
+      <rect class="svg-interactive hs-node" x="588.33" y="433.03" width="23.55" height="23.55" rx="11.77" data-id="node_f" data-letter="F"><title>F: Back Referral from Secondary to Primary</title></rect>
+      <rect class="svg-interactive hs-node" x="633.39" y="528.34" width="29.72" height="30.23" rx="14.86" data-id="node_g" data-letter="G"><title>G: Back Referral from Tertiary to Primary care</title></rect>
       <rect class="svg-interactive hs-node" x="23.3" y="336.44" width="20.46" height="20.46" rx="10.23" data-id="node_h" data-letter="H"><title>H: Secondary &rarr; Primary Counter-Referral</title></rect>
       <rect class="svg-interactive hs-node" x="50.6" y="339.01" width="22.52" height="22.52" rx="11.26" data-id="node_i" data-letter="I"><title>I: Tertiary &rarr; Secondary/Primary Counter-Referral</title></rect>
 
@@ -1370,13 +1370,13 @@ const DEFAULT_CLINICAL_DATA = {
   `
 },
 
-// ===== NODE E: PRIMARY INWARD CARE =====
+// ===== NODE E: Back referral from Tertiary to Secondary =====
 "node_e": {
-  title: "E &mdash; Primary Inward Care",
+  title: "E &mdash; Back referral from Tertiary to Secondary",
   accent: "accent-primary",
   content: `
     <div class="modal-section accent-primary">
-      <h3><span class="badge badge-green">NODE E</span> Primary Inward Care</h3>
+      <h3><span class="badge badge-green">NODE E</span> Back Referral from Tertiary to Secondary Care</h3>
       <p>Short-term observation for uncomplicated cases (e.g., uncomplicated insulin initiation, mild foot infections).</p>
     </div>
     <div class="modal-section">
@@ -1391,13 +1391,13 @@ const DEFAULT_CLINICAL_DATA = {
   `
 },
 
-// ===== NODE F: SECONDARY INWARD CARE =====
+// ===== NODE F: Back Referral from Secondary to Primary =====
 "node_f": {
-  title: "F &mdash; Secondary Inward Care",
+  title: "F &mdash; Back Referral from Secondary to Primary",
   accent: "accent-secondary",
   content: `
     <div class="modal-section accent-secondary">
-      <h3><span class="badge badge-blue">NODE F</span> Secondary Inward Care</h3>
+      <h3><span class="badge badge-blue">NODE F</span> Back Referral from Secondary to Primary</h3>
       <p>Moderate complications requiring specialist oversight (e.g., VRIII management, moderate DKA, surgical debridement).</p>
     </div>
     <div class="modal-section">
@@ -1414,13 +1414,13 @@ const DEFAULT_CLINICAL_DATA = {
   `
 },
 
-// ===== NODE G: TERTIARY INWARD CARE =====
+// ===== NODE G: Back Referral from Tertiary to Primary =====
 "node_g": {
-  title: "G &mdash; Tertiary Inward Care",
+  title: "G &mdash; Back Referral from Tertiary to Primary",
   accent: "accent-tertiary",
   content: `
     <div class="modal-section accent-tertiary">
-      <h3><span class="badge badge-purple">NODE G</span> Tertiary Inward Care</h3>
+      <h3><span class="badge badge-purple">NODE G</span> Back Referral from Tertiary to Primary care</h3>
       <p>ICU/HDU admissions for severe cases (Severe DKA/HHS, major amputations, acute coronary syndromes).</p>
     </div>
     <div class="modal-section">
